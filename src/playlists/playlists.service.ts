@@ -17,15 +17,27 @@ export class PlaylistsService {
   }
 
   addSongToPlaylist(playlistid: number, songid: number) {
-    return this.db.playlist.
+    return this.db.playlist.update({
+      where: { playlistID: playlistid },
+      data: {
+        songs: {
+          connect: { id: songid }
+        }
+      }
+    });
   }
   
   async findAll() {
     return this.db.playlist.findMany();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} playlist`;
+  async findOne(id: number) {
+    return (await this.db.playlist.findUnique({
+      where: { playlistID: id },
+      include: {
+        songs: true
+      }
+    }));
   }
 
   update(id: number, updatePlaylistDto: UpdatePlaylistDto) {
